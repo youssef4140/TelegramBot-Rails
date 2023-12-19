@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bot chat</title>
+
+ <link rel="stylesheet" type="text/css" href="<%= asset_path('chat_app.css') %>"> 
+
+</head>
+<body>
+  <div class="outer-container">
+    <div class="users-list",id="message-list">
+    
+      <% Message.pluck(:user_id).uniq.each do |user_id| %>
+  
+        <li>
+        <button>
+          <%= link_to "#{ Message.where.not(user_name: "botson").where(user_id: user_id).order(created_at: :desc).pluck(:user_name).first || "Unknown" }", by_user_path(user_id: user_id), class: "link-primary" %>
+        </button>
+        </li>
+      <% end %>
+    </div>
+    <div class="chat-container">
+      <span class="user-name">
+        <%= @user_id[params[:user_id].to_i].reverse.find { |message| message.user_name != "botson" }&.user_name || "Unknown" %>
+      </span>
+
+      <ul class="message-lists" id="message-list">
+        <% @user_id.each do |hash| %>
+          <% hash[1].each do |message| %>
+            <% if message.user_id == params[:user_id].to_i %>
+              <li class="message <%= message.user_name == "botson" ? "botson" : "other" %>" style="flex-direction: <%= message.user_name == "botson" ? "row-reverse" : "row" %>;">
+              <%if message.text.present?%>
+                <span><%= message.text %></span>
+                <%elsif message.image_url.present?%>
+                <img src=<%= message.image_url %> ,alt="Image from Telegram ", class="message-image" >
+              </li>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      </ul>
+
+      <%= form_tag send_message_path,multipart: true, class: 'send-message-form' do %>
+        <ul style="padding: 0">
+          <%= hidden_field_tag :user_id, params[:user_id].to_i, placeholder: 'Enter user ID' %>
+          <li><%= text_field_tag :message_text, '', placeholder: 'Enter your message', :autocomplete => :off, class: "text-field" %></li>
+          <li><%= submit_tag 'Send',class: "submit-tag" %></li>
+          <li><%= file_field_tag :image %></li>
+        </ul>
+      <% end %>
+    </div>
+  </div>
+
+  <script>
+    // Scroll to the bottom of the message list on page load
+    var messageList = document.getElementById('message-list');
+    messageList.scrollTop = messageList.scrollHeight;
+  </script>
+  </body>

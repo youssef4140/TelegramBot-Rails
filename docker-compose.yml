@@ -1,0 +1,54 @@
+# services:
+#   app:
+#     build: .
+#     ports:
+#       - "3000:3000"
+#     depends_on:
+#       - db
+#       - redis
+#       - sidekiq
+#     environment:
+#       DB_HOST: db
+#       REDIS_URL: redis://redis:6379
+#     command: bundle exec rails s -p 3000 -b '0.0.0.0'
+#     volumes:
+#       - .:/app
+#   db:
+#     image: "postgres"
+#     environment:
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: postgres
+#       POSTGRES_DB: app_development
+#   redis:
+#     image: "redis:alpine"
+#   sidekiq:
+#     build: .
+#     command: bundle exec sidekiq
+#     depends_on:
+#       - db
+#       - redis
+
+#   # console:
+#   #   build: .
+#   #   command: ["sh", "-c", "echo 'TelegramListenJob.perform_later' | bundle exec rails c"]
+#   #   depends_on:
+#   #     - db
+#   #     - redis
+#   #     - sidekiq
+
+services:
+  db:
+    image: postgres:13.3
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: telegram_bot_db
+  web:
+    build: .
+    command: bundle exec rails s -p 3000 -b '0.0.0.0'
+    volumes:
+      - .:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db

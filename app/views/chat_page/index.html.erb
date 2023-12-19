@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bot chat</title>
+  <link rel="stylesheet" type="text/css" href="<%= asset_path('chat_app.css') %>">
+
+      <div>
+      <span style ="position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    font-size: 34px;
+                    font-weight: bold;
+                    margin-bottom: 20px;
+                    background-color: #f2f2f2;
+                    border-radius: 10px;
+                    padding: 20px;
+                    margin: 0;
+                    text-align: center;">
+        Pick a user to chat with!
+      </span>
+      
+    
+    </div>
+</head>
+<body>
+    
+
+<div class="users-list">
+    
+      <% Message.pluck(:user_id).uniq.each do |user_id| %>
+  
+        <li>
+        <button>
+          
+          <%= link_to "#{ Message.where.not(user_name: "botson").where(user_id: user_id).order(created_at: :desc).pluck(:user_name).first || "Unknown" }", by_user_path(user_id: user_id), class: "link-primary" %>
+        </button>
+        </li>
+      <% end %>
+    </div>
+
+ 
+
+  </body>
